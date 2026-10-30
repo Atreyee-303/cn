@@ -1,41 +1,19 @@
-# UDP Server Program
-
 import socket
 
-# Create UDP socket
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(("127.0.0.1", 8080))
 
-# Bind socket to IP address and port
-server_socket.bind(("localhost", 9999))
+print("Server is ready")
 
-print("UDP Server is running...")
-print("Waiting for client request...")
+data, addr = s.recvfrom(1024)
+text = data.decode()
 
-while True:
+print("Received:", text)
 
-    # Receive data from client
-    data, client_address = server_socket.recvfrom(1024)
+rev = text[::-1]
+s.sendto(rev.encode(), addr)
 
-    message = data.decode()
+s.close()
 
-    # Message format: choice|string
-    choice, text = message.split("|", 1)
 
-    if choice == "1":
-        # Convert to lowercase
-        result = text.lower()
 
-    elif choice == "2":
-        # Reverse the string
-        result = text[::-1]
-
-    else:
-        result = "Invalid choice!"
-
-    # Send result back to client
-    server_socket.sendto(result.encode(), client_address)
-
-    print("Client:", text)
-    print("Result:", result)
-
-server_socket.close()
